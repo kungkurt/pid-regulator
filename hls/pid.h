@@ -1,27 +1,22 @@
-#include <HLS/hls.h>
-#include <ac_int.h>
-#include <ac_fixed.h>
+#ifndef PID_H_
+#define PID_H_
 
-typedef ac_int<1, false> bool_t;                                // bool type
+#include "HLS/hls.h"
+#include "HLS/ac_int.h"
+#include "HLS/ac_fixed.h"
+
+#define NR_SETTINGS      6
+#define CLAMP_LOW_LIMIT  75
+#define CLAMP_HIGH_LIMIT 511
+
 typedef ac_int<16, false> sp_t;                                 // type for setpoint
 typedef ac_int<12, false> sensor_t;                             // type for sensor
-typedef ac_fixed<64, 16, true> pid_t;                           // type for p, i and d
-typedef ac_fixed<32, 8, false> freq_t;                          // type for update frequency in seconds
+typedef ac_fixed<32, 10, true> pid_t;                           // type for p, i and d
+typedef ac_int<10, false> plant_t;                              // type for plant
 
-typedef struct {
-    pid_t p;
-    pid_t i;
-    pid_t d;
-    pid_t limit_min;
-    pid_t limit_max;
-    freq_t freq;
-} pid_hw;
+component void pid(hls_avalon_slave_memory_argument(NR_SETTINGS*sizeof(float)) float* settings,
+                   hls_avalon_slave_register_argument unsigned short setpoint,
+                   sensor_t sensor_value,
+                   bool reset);
 
-typedef struct {
-    double p;
-    double i;
-    double d;
-    double limit_min;
-    double limit_max;
-    float freq;
-} pid_settings;
+#endif
