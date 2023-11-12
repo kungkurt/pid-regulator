@@ -15,7 +15,7 @@ pid_t multiply(pid_t a, pid_t b) {
 hls_avalon_slave_component component
 void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
          hls_avalon_slave_register_argument short setpoint,
-         hls_avalon_slave_register_argument pid_t res,
+         hls_avalon_slave_register_argument plant_t res,
          pid_t sensor_value,
          bool reset) {
     static pid_t last_error = 0.0, integral_total = 0.0;
@@ -51,9 +51,9 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
 
     // set return value
     if(i > CLAMP_HIGH_LIMIT || i < CLAMP_LOW_LIMIT) {
-        ret = p.to_ac_int() + d.to_ac_int();
+        ret = p + d;
     } else {
-        ret = p.to_ac_int() + i.to_ac_int() + d.to_ac_int();
+        ret = p + i + d;
     }
 
     // set current error to last error
@@ -64,10 +64,10 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
 
     // return value
     if(ret > max) {
-        ret = max.to_ac_int();
+        ret = max;
     } else if(ret < min) {
-        ret = min.to_ac_int();
+        ret = min;
     }
 
-    settings[6] = ret.to_float();
+    res = ret.to_ac_int();
 }
