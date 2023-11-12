@@ -4,6 +4,11 @@
 #define test_samples 405
 
 int main(void) {
+    bool reset = true;
+    pid_t sp;
+    pid_t sv = 0;
+    pid_t results[test_samples];
+    plant_t *plant;
     float *settings[NR_ARGS] = {
         0.1,                            // proportional gain
         0.0,                            // integral gain
@@ -12,11 +17,6 @@ int main(void) {
         1023.0,                         // max value
         0.01                            // update frequency (seconds)
     };
-    bool reset = true;
-    pid_t sp;
-    pid_t sv = 0;
-    pid_t *plant;
-    pid_t results[test_samples];
 
     for(int i = 0; i < test_samples; i++) {
         if(i < 5) {                     // setpoint 0
