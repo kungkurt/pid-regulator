@@ -28,9 +28,9 @@ GOTO init_compiler
 set "CC=i++"
 set "TARGET=10M50DAF484C7G"
 set "HOST=x86-64"
-set "FLAGS=--clock 50MHz"
-set "SOURCE_FILES=generate_keys.c testbench.c"
-set "APPLICATION_NAME=rsa"
+set "FLAGS=--clock 50MHz --fpc --fp-relaxed"
+set "SOURCE_FILES=pid.c testbench.c"
+set "APPLICATION_NAME=pid-controller"
 set "RUN_ARG=unset"
 GOTO set_flags
 
