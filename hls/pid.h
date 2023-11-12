@@ -11,9 +11,11 @@
 
 typedef ac_fixed<32, 12, true> pid_t;                           // type for p, i and d
 
-component plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
-                      hls_avalon_slave_register_argument short setpoint,
-                      sensor_t sensor_value,
-                      bool reset);
+hls_avalon_slave_component component
+void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
+         hls_avalon_slave_register_argument short setpoint,
+         hls_avalon_slave_register_argument pid_t res,
+         pid_t sensor_value,
+         bool reset);
 
 #endif
