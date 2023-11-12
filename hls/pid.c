@@ -12,8 +12,9 @@ pid_t multiply(pid_t a, pid_t b) {
     return a * b;
 }
 
-component plant_t pid(hls_avalon_slave_memory_argument(NR_SETTINGS*sizeof(float)) float* settings,
+component plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
                       hls_avalon_slave_register_argument short setpoint,
+                      hls_avalon_slave_register_argument pid_t res,
                       pid_t sensor_value,
                       bool reset) {
     static pid_t last_error = 0.0, integral_total = 0.0;
@@ -66,5 +67,6 @@ component plant_t pid(hls_avalon_slave_memory_argument(NR_SETTINGS*sizeof(float)
     } else if(ret < min) {
         ret = min.to_ac_int();
     }
-    return ret;
+
+    settings[6] = ret;
 }

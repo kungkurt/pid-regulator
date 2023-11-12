@@ -4,18 +4,19 @@
 #define test_samples 405
 
 int main(void) {
-    float settings[NR_SETTINGS] = {
-        1.0,                            // proportional gain
-        0.5,                           // integral gain
+    float *settings[NR_ARGS] = {
+        0.1,                            // proportional gain
+        0.0,                            // integral gain
         0.0,                            // derivative gain
         25.0,                           // min value
         1023.0,                         // max value
         0.01                            // update frequency (seconds)
     };
     bool reset = true;
-    sp_t sp;
-    sensor_t sv = 0;
-    plant_t results[test_samples];
+    pid_t sp;
+    pid_t sv = 0;
+    pid_t *plant;
+    pid_t results[test_samples];
 
     for(int i = 0; i < test_samples; i++) {
         if(i < 5) {                     // setpoint 0
@@ -29,8 +30,9 @@ int main(void) {
         } else {                        // setpoint 0
             sp = 0;
         }
+        pid(settings, sp, plant, sv, reset);
         if(reset) reset = false;
-        sv = results[i];
+        sv = &plant;
     }
 
     for(int i = 0; i < test_samples; i++) {
