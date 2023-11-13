@@ -8,7 +8,8 @@ int main(void) {
     short int sp;
     pid_t sv = 0;
     plant_t results[test_samples];
-    plant_t *plant;
+    plant_t actuator = 0;
+    plant_t *plant = &actuator;
     float settings[NR_ARGS] = {
         0.1f,                            // proportional gain
         0.0f,                            // integral gain
@@ -24,7 +25,7 @@ int main(void) {
             sp = 0;
             reset = true;
         } else if(i == 5) {             // setpoint 655
-            printf("setpoint: 655\n-------------\n")
+            printf("setpoint: 655\n-------------\n");
             sp = 655;
             reset = false;
         } else if(i == 100) {            // setpoint 500
