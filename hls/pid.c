@@ -16,11 +16,10 @@ pid_t multiply(pid_t a, pid_t b) {
 hls_avalon_slave_component component
 void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
          hls_avalon_slave_register_argument short setpoint,
-         hls_avalon_slave_register_argument plant_t* res,
          pid_t sensor_value,
-         bool reset) {
+         bool reset, ) {
     static pid_t last_error = 0.0, integral_total = 0.0;
-    pid_t Gp, Gi, Gd, p, i, d, error, min, max, freq;
+    pid_t Gp, Gi, Gd, p, i, d, error, min, max, freq, tmp;
     pid_t ret = 0.0, sp = setpoint;
 
     // set floating point values to fixed point values.
@@ -31,6 +30,13 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
     max = settings[4];
     freq = settings[5];
 
+    printf("P Gain = %f\n", Gp.to_double());
+    printf("I Gain = %f\n", Gi.to_double());
+    printf("D Gain = %f\n", Gd.to_double());
+    printf("min = %f\n", min.to_double());
+    printf("max = %f\n", max.to_double());
+    printf("frequency = %f seconds\n\n", freq.to_double());
+
     // if reset is active
     if(reset) {
         integral_total = 0;
@@ -40,15 +46,21 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
     // calculate current error
     error = sp - sensor_value;
 
+    struct_pid_start send_away = {
+        setting,
+        error
+    };
+
     // calculate result for p
     p = multiply(Gp, error);
 
     // calculate result for i
-    i = integral_total + (multiply(multiply(Gi, error), freq));
+    tmp = multiply(Gi, error);
+    i = integral_total + (multiply(tmp, freq));
 
     // calculate result for d
     // use at own risk, make sure to have a filter from sensor. noice will be amplified with derivative.
-    d = multiply(Gd, divide((error - last_error), freq));
+    d = multiply(Gd, ((error - last_error) / freq));
 
     // set return value
     if(i > CLAMP_HIGH_LIMIT || i < CLAMP_LOW_LIMIT) {
@@ -70,11 +82,12 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
         ret = min;
     }
 
-    printf("error = %f", error.to_double());
-    printf("proportional = %f", p.to_double());
-    printf("integral = %f", i.to_double());
-    printf("derivative = %f", d.to_double());
-    printf("return value = %f", ret.to_double());
-    printf("=======================");
-    *res = ret.to_ac_int();
+    printf("error = %f\n", error.to_double());
+    printf("proportional = %f\n", p.to_double());
+    printf("integral = %f\n", i.to_double());
+    printf("derivative = %f\n", d.to_double());
+    printf("return value = %f\n", ret.to_double());
+    printf("=======================\n\n");
+    return ret.to_ac_int();
 }
+
