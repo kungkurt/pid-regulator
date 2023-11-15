@@ -5,6 +5,15 @@
 
 #define test_samples 105
 
+plant_t plant = 0;
+
+void process_plant_value(pid_t value) {
+    if(value > 50) {
+        value = value * 0.8;
+    }
+    plant = plant + value;
+}
+
 int main(void) {
     double prandom;
     time_t t;
@@ -15,7 +24,7 @@ int main(void) {
     pid_t sv = 0;
     plant_t results[test_samples];
     float settings[NR_ARGS] = {
-        0.3f,                            // proportional gain
+        0.1f,                            // proportional gain
         0.4f,                            // integral gain
         0.0f,                            // derivative gain
         -1023.0f,                        // min value
