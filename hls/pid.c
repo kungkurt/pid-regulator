@@ -14,7 +14,7 @@ pid_t multiply(pid_t a, pid_t b) {
 }
 
 hls_avalon_slave_component component
-void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
+plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
          hls_avalon_slave_register_argument short setpoint,
          pid_t sensor_value,
          bool reset, ) {
