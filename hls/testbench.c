@@ -11,7 +11,7 @@ int main(void) {
     plant_t actuator = 0;
     plant_t *plant = &actuator;
     float settings[NR_ARGS] = {
-        0.1f,                            // proportional gain
+        0.2f,                            // proportional gain
         0.0f,                            // integral gain
         0.0f,                            // derivative gain
         25.0f,                           // min value
@@ -23,11 +23,9 @@ int main(void) {
         if(i == 0) {                    // setpoint 0
             printf("setpoint: 0\n-----------\n");
             sp = 0;
-            reset = true;
         } else if(i == 5) {             // setpoint 655
             printf("setpoint: 655\n-------------\n");
             sp = 655;
-            reset = false;
         } else if(i == 100) {            // setpoint 500
             printf("setpoint: 500\n-------------\n");
             sp = 500;

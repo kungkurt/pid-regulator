@@ -3,6 +3,7 @@
  */
 
 #include "pid.h"
+#include "HLS/stdio.h"
 
 pid_t divide(pid_t a, pid_t b) {
     return a / b;
@@ -69,5 +70,11 @@ void pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings
         ret = min;
     }
 
+    printf("error = %f", error.to_double());
+    printf("proportional = %f", p.to_double());
+    printf("integral = %f", i.to_double());
+    printf("derivative = %f", d.to_double());
+    printf("return value = %f", ret.to_double());
+    printf("=======================");
     *res = ret.to_ac_int();
 }
