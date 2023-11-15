@@ -30,6 +30,8 @@ plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* setti
     max = settings[4];
     freq = settings[5];
 
+    printf("sensor value = %i", sensor_value.to_double());
+    printf("setpoint = %f\n", sp.to_double());
     printf("P Gain = %f\n", Gp.to_double());
     printf("I Gain = %f\n", Gi.to_double());
     printf("D Gain = %f\n", Gd.to_double());
