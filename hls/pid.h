@@ -6,7 +6,7 @@
 #include "HLS/ac_fixed.h"
 
 #define NR_ARGS          6
-#define CLAMP_LOW_LIMIT  75
+#define CLAMP_LOW_LIMIT  -511
 #define CLAMP_HIGH_LIMIT 511
 
 typedef ac_fixed<32, 12, true> pid_t;                           // type for pid_controller

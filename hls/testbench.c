@@ -16,7 +16,7 @@ int main(void) {
     plant_t results[test_samples];
     float settings[NR_ARGS] = {
         0.3f,                            // proportional gain
-        0.6f,                            // integral gain
+        0.4f,                            // integral gain
         0.0f,                            // derivative gain
         -1023.0f,                        // min value
         1023.0f,                         // max value
