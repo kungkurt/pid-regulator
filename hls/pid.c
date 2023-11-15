@@ -17,7 +17,7 @@ hls_avalon_slave_component component
 plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
          hls_avalon_slave_register_argument short setpoint,
          pid_t sensor_value,
-         bool reset, ) {
+         bool reset) {
     static pid_t last_error = 0.0, integral_total = 0.0;
     pid_t Gp, Gi, Gd, p, i, d, error, min, max, freq, tmp;
     pid_t ret = 0.0, sp = setpoint;
@@ -30,7 +30,7 @@ plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* setti
     max = settings[4];
     freq = settings[5];
 
-    printf("sensor value = %i", sensor_value.to_double());
+    printf("sensor value = %i\n", sensor_value.to_int());
     printf("setpoint = %f\n", sp.to_double());
     printf("P Gain = %f\n", Gp.to_double());
     printf("I Gain = %f\n", Gi.to_double());
@@ -48,11 +48,6 @@ plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* setti
     // calculate current error
     error = sp - sensor_value;
 
-    struct_pid_start send_away = {
-        setting,
-        error
-    };
-
     // calculate result for p
     p = multiply(Gp, error);
 
@@ -66,6 +61,7 @@ plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* setti
 
     // set return value
     if(i > CLAMP_HIGH_LIMIT || i < CLAMP_LOW_LIMIT) {
+        integral_total = 0;
         ret = p + d;
     } else {
         ret = p + i + d;
