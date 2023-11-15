@@ -1,4 +1,4 @@
-#include <stdio.h>
+#include "HLS/stdio.h"
 #include "pid.h"
 
 #define test_samples 405
@@ -8,8 +8,6 @@ int main(void) {
     short int sp;
     pid_t sv = 0;
     plant_t results[test_samples];
-    plant_t actuator = 0;
-    plant_t *plant = &actuator;
     float settings[NR_ARGS] = {
         0.2f,                            // proportional gain
         0.0f,                            // integral gain
@@ -40,7 +38,7 @@ int main(void) {
         }
         pid(settings, sp, plant, sv, reset);
         if(reset) reset = false;
-        results[i] = *plant;
+        results[i] = pid(settings, sp, sv, reset);
     }
 
     for(int i = 0; i < test_samples; i++) {
