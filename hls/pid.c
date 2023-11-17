@@ -44,7 +44,7 @@ plant_t pid(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* setti
 
     // calculate result for i
     tmp = multiply(Gi, error);
-    i = integral_total + (multiply(tmp, freq));
+    i = integral_total + multiply(tmp, freq);
 
     // calculate result for d
     // use at own risk, make sure to have a filter from sensor. noice will be amplified with derivative.

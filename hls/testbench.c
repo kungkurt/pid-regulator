@@ -7,26 +7,28 @@
 
 plant_t plant = 0;
 
-void process_plant_value(pid_t value) {
+void process_plant_value(plant_t value) {
+    double v = value.to_double();
     if(value > 50) {
-        value = value * 0.8;
+        v = v * 0.8;
+        value = v;
     }
-    plant = plant + value;
+    plant = plant + (int)value;
 }
 
 int main(void) {
     double prandom;
     time_t t;
-    int temp;
+    plant_t temp;
 
     bool reset = true;
     short sp;
     pid_t sv = 0;
     plant_t results[test_samples];
     float settings[NR_ARGS] = {
-        0.1f,                            // proportional gain
-        0.4f,                            // integral gain
-        0.0f,                            // derivative gain
+        0.12f,                           // proportional gain
+        0.68f,                           // integral gain
+        1.1f,                            // derivative gain
         -1023.0f,                        // min value
         1023.0f,                         // max value
         0.01f                            // update frequency (seconds)
@@ -56,18 +58,48 @@ int main(void) {
             printf("setpoint: 0\n-----------\n");
             sp = 0;
         }
-        results[i] = pid(settings, sp, sv, reset);
 
-        // create simulated noice on signal.
-        temp = results[i];
-        sv = temp + prandom;
+        // run DUT
+        temp = pid(settings, sp, sv, reset);
+
+        // create simulated sensor signal.
+        process_plant_value(temp);
+        sv = plant;
 
         // only use reset on first iteration.
         if(reset) reset = false;
+
+        // set result as current sensor value.
+        results[i] = sv.to_ac_int();
     }
 
     for(int i = 0; i < test_samples; i++) {
-        printf("%i: %i\n", i, (int)results[i]);
+        switch(i) {
+            case 0:
+            printf("reset..\n");
+            break;
+            case 1:
+            printf("\nsetpoint 0\n");
+            break;
+            case 5:
+            printf("\nsetpoint 655\n");
+            break;
+            case 25:
+            printf("\nsetpoint 500\n");
+            break;
+            case 45:
+            printf("\nsetpoint 250\n");
+            break;
+            case 65:
+            printf("\nsetpoint 800\n");
+            break;
+            case 85:
+            printf("\nsetpoint 0\n");
+            break;
+            default:
+            if(i % 5 == 0) printf("\n")
+        }
+        printf("\t%i", i, (int)results[i]);
     }
 
     return 0;

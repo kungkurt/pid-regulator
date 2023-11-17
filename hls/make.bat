@@ -29,7 +29,7 @@ set "CC=i++"
 set "TARGET=10M50DAF484C7G"
 set "HOST=x86-64"
 set "FLAGS=--clock 50MHz --fpc --fp-relaxed"
-set "SOURCE_FILES=pid.c testbench.c"
+set "SOURCE_FILES=proportion.c integral.c derivative.c testbench.c"
 set "APPLICATION_NAME=pid-controller"
 set "RUN_ARG=unset"
 GOTO set_flags
