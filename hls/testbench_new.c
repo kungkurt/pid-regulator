@@ -12,13 +12,13 @@
 plant_t plant = 0;
 sensor_t sensor = 0;
 
-void process_plant_value(plant_t value) {
-    double v = value.to_double();
+void process_plant_value(int value) {
 
     // make sure big changes take longer to reach.
     if(value > 5 || value < -5) {
+        double v = (double)value;
         v = v * 0.8;
-        value = v;
+        value = (int)v;
     }
 
     plant = plant + value;
@@ -29,11 +29,13 @@ int main(void) {
     bool reset = true;
     short sp;
     sensor_t sv = 0;
-    pid_struct results_input[test_samples];
-    pid_struct results_p[test_samples];
-    pid_struct results_i[test_samples];
-    pid_struct results_d[test_samples];
-    plant_t results[test_samples];
+    p_struct results_input_p[test_samples];
+    i_struct results_input_i[test_samples];
+    d_struct results_input_d[test_samples];
+    pid_t results_p;
+    pid_t results_i;
+    pid_t results_d;
+    short int logs[LOG_SIZE];
     plant_t results_plant[test_samples];
     float settings[NR_ARGS] = {
         0.10f,                            // update frequency (seconds)
@@ -43,14 +45,18 @@ int main(void) {
     };
 
     // Streams
-    ihc::stream_out<pid_struct> pid_input_out;
-    ihc::stream_in<pid_struct>  proportion_in;
-    ihc::stream_out<pid_struct> proportion_out;
-    ihc::stream_in<pid_struct>  integral_in;
-    ihc::stream_out<pid_struct> integral_out;
-    ihc::stream_in<pid_struct>  derivative_in;
-    ihc::stream_out<pid_struct> derivative_out;
-    ihc::stream_in<pid_struct>  pid_output_in;
+    ihc::stream_out<p_struct> pid_input_pout;
+    ihc::stream_out<i_struct> pid_input_iout;
+    ihc::stream_out<d_struct> pid_input_dout;
+    ihc::stream_in<p_struct>  proportion_in;
+    ihc::stream_out<pid_t>    proportion_out;
+    ihc::stream_in<i_struct>  integral_in;
+    ihc::stream_out<pid_t>    integral_out;
+    ihc::stream_in<d_struct>  derivative_in;
+    ihc::stream_out<pid_t>    derivative_out;
+    ihc::stream_in<pid_t>     pid_output_pin;
+    ihc::stream_in<pid_t>     pid_output_iin;
+    ihc::stream_in<pid_t>     pid_output_din;
 
     // . . . . . . . . . . . . . .
     // . . pid input testbench . .
@@ -77,54 +83,58 @@ int main(void) {
         }
 
         // run DUT
-        pid_input(settings, sp, sv, reset, pid_input_out);
+        pid_input(settings, sp, sv, reset, pid_input_pout, pid_input_iout, pid_input_dout);
 
         // read output
-        results_input[i] = pid_input_out.read();
+        results_input_p[i] = pid_input_pout.read();
+        results_input_i[i] = pid_input_iout.read();
+        results_input_d[i] = pid_input_dout.read();
 
         // . . . . . . . . . . . . . . . .
         // . . proportional  testbench . .
         // . . . . . . . . . . . . . . . .
-        proportion_in.write(results_input[i]);                                      // populate proportional stream
+        proportion_in.write(results_input_p[i]);                                      // populate proportional stream
 
         // run proportional
         ihc_hls_enqueue_noret(&proportional, proportion_in, proportion_out);        // que proportional invocations
         ihc_hls_component_run_all(proportional);                                    // run proportional invocations
 
-        results_p[i] = proportion_out.read();                                       // read proportional output
+        results_p = proportion_out.read();                                       // read proportional output
 
         // . . . . . . . . . . . . . .
         // . . integral  testbench . .
         // . . . . . . . . . . . . . .
-        integral_in.write(results_p[i]);                                        // populate integral stream
+        integral_in.write(results_input_i[i]);                                        // populate integral stream
 
         // run integral
         ihc_hls_enqueue_noret(&integral, integral_in, integral_out);                // que integral invocations
         ihc_hls_component_run_all(integral);                                        // run integral invocations
 
-        results_i[i] = integral_out.read();                                         // read integral output
+        results_i = integral_out.read();                                         // read integral output
 
         // . . . . . . . . . . . . . . .
         // . . derivative  testbench . .
         // . . . . . . . . . . . . . . .
-        derivative_in.write(results_i[i]);                                      // populate derivative stream
+        derivative_in.write(results_input_d[i]);                                      // populate derivative stream
 
         // run integral
         ihc_hls_enqueue_noret(&derivative, derivative_in, derivative_out);          // que derivative invocations
         ihc_hls_component_run_all(derivative);                                      // run derivative invocations
 
-        results_d[i] = derivative_out.read();                                       // read derivative output
+        results_d = derivative_out.read();                                       // read derivative output
 
         // . . . . . . . . . . . . . . .
         // . . pid output  testbench . .
         // . . . . . . . . . . . . . . .
-        pid_output_in.write(results_d[i]);
-        ihc_hls_enqueue(&results[i], &pid_output, pid_output_in);
+        pid_output_pin.write(results_p);
+        pid_output_iin.write(results_i);
+        pid_output_din.write(results_d);
+        ihc_hls_enqueue_noret(&pid_output, pid_output_pin, pid_output_iin, pid_output_din, logs);
         ihc_hls_component_run_all(pid_output);
 
         // TODO simulate sensor value(sv) and do some process value conversion between plant and sensor.
         // this should also be implemented in HW.... when some sensor and actuator is known....
-        process_plant_value(results[i]);
+        process_plant_value(logs[0]);
         sv = sensor;
         results_plant[i] = plant;
 

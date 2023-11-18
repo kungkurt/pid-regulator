@@ -5,21 +5,33 @@ void pid_input(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* se
                hls_avalon_slave_register_argument short setpoint,
                pid_t sensor_value,
                bool reset,
-               ihc::stream_out<pid_struct>& dout) {
+               ihc::stream_out<p_struct>& pout,
+               ihc::stream_out<i_struct>& iout,
+               ihc::stream_out<d_struct>& dout) {
     pid_t sp = setpoint;
     pid_t error = sp - sensor_value;
 
-    pid_struct work = {
+    p_struct p = {
         reset,
         error,
-        settings[0],
-        settings[1],
-        settings[2],
-        settings[3],
-        0.0,
-        0.0,
-        0.0
+        settings[1]
     };
 
-    dout.write(work);
+    i_struct i = {
+        reset,
+        settings[0],
+        error,
+        settings[2]
+    };
+
+    d_struct d = {
+        reset,
+        settings[0],
+        error,
+        settings[3]
+    };
+
+    pout.write(p);
+    iout.write(i);
+    dout.write(d);
 }

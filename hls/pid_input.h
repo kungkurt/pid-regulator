@@ -8,6 +8,8 @@ void pid_input(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* se
                hls_avalon_slave_register_argument short setpoint,
                pid_t sensor_value,
                bool reset,
-               ihc::stream_out<pid_struct>& dout);
+               ihc::stream_out<p_struct>& pout,
+               ihc::stream_out<i_struct>& iout,
+               ihc::stream_out<d_struct>& dout);
 
 #endif

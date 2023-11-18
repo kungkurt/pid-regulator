@@ -1,23 +1,23 @@
 #include "integral.h"
 
 hls_always_run_component component
-void integral(ihc::stream_in<pid_struct>& din, ihc::stream_out<pid_struct>& dout) {
+void integral(ihc::stream_in<i_struct>& din, ihc::stream_out<pid_t>& dout) {
     static pid_t reset_reg = 0.0;
-    pid_struct work = din.read();
+    i_struct work = din.read();
+    pid_t ret = 0;
 
-    // reset register if setpoint is reached.
     if(work.reset) {
+        // reset register on active reset.
         reset_reg = 0;
-    }
-
-    // calculate output but do not accumulate during integral windup.
-    if(!(reset_reg > CLAMP_HIGH_LIMIT || reset_reg < CLAMP_LOW_LIMIT)) {
+    } else if(!(reset_reg > CLAMP_HIGH_LIMIT || reset_reg < CLAMP_LOW_LIMIT)) {
+        // calculate output but do not accumulate during integral windup.
         reset_reg = reset_reg + ((work.Gi / work.freq) * work.error);
-        work.i = work.Gi * work.error + reset_reg;
+        ret = work.Gi + reset_reg;
     } else {
-        work.i = 0;
+        // integral windup disable integral.
+        ret = 0;
     }
 
     // write result on output.
-    dout.write(work);
+    dout.write(ret);
 }

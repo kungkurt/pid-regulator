@@ -12,6 +12,7 @@ typedef ac_fixed<14, 3, false> freq_t;                          // type for upda
 typedef ac_int<11, true> plant_t;                              // type for plant data.        (the plant is the actuator)
 typedef ac_int<12, true> sensor_t;                             // type for sensor data.       (12-bit is the onboard adc, i dont know)
 
+/*
 struct pid_struct {
     bool reset;
     pid_t error;
@@ -22,6 +23,26 @@ struct pid_struct {
     pid_t p;
     pid_t i;
     pid_t d;
+}; */
+
+struct p_struct {
+    bool reset;
+    pid_t error;
+    pid_t Gp;
+};
+
+struct i_struct {
+    bool reset;
+    freq_t freq;
+    pid_t error;
+    pid_t Gi;
+};
+
+struct d_struct {
+    bool reset;
+    freq_t freq;
+    pid_t error;
+    pid_t Gd;
 };
 
 #endif
