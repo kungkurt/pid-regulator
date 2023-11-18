@@ -1,16 +1,16 @@
 #include "proportional.h"
 
-component
+hls_always_run_component component
 void proportional(ihc::stream_in<pid_struct>& din, ihc::stream_out<pid_struct>& dout) {
 
     // read data in to local register.
     pid_struct work = din.read();
 
     // calculate proportional.
-    if(work->reset) {
-        work->p = 0;
+    if(work.reset) {
+        work.p = 0;
     } else {
-        work->p = work->Gp * work->error;
+        work.p = work.Gp * work.error;
     }
 
     // write localregister to output.

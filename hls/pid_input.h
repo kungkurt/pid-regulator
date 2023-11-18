@@ -6,6 +6,8 @@
 hls_avalon_slave_component component
 void pid_input(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* settings,
                hls_avalon_slave_register_argument short setpoint,
-               pid_t sensor_value);
+               pid_t sensor_value,
+               bool reset,
+               ihc::stream_out<pid_struct>& dout);
 
 #endif

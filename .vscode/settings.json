@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "proportional.h": "c",
+        "pid_output.h": "c"
+    }
+}

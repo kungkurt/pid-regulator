@@ -3,7 +3,7 @@
 
 #include "config.h"
 
-component
-plant_t pid_output(ihc::stream_in<pid_struct>& din, plant_t output);
+hls_always_run_component component
+plant_t pid_output(ihc::stream_in<pid_struct>& din);
 
 #endif

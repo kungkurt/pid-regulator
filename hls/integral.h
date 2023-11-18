@@ -3,10 +3,10 @@
 
 #include "config.h"
 
-#define CLAMP_LOW_LIMIT  -511
-#define CLAMP_HIGH_LIMIT 511
+#define CLAMP_LOW_LIMIT  -70
+#define CLAMP_HIGH_LIMIT 70
 
-component
+hls_always_run_component component
 void integral(ihc::stream_in<pid_struct>& din, ihc::stream_out<pid_struct>& dout);
 
 #endif

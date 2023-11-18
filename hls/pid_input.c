@@ -6,10 +6,10 @@ void pid_input(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* se
                pid_t sensor_value,
                bool reset,
                ihc::stream_out<pid_struct>& dout) {
-    pid_t sp = setpoint, sv = sensor_value;
-    pid_t error = sp - sv;
+    pid_t sp = setpoint;
+    pid_t error = sp - sensor_value;
 
-    static pid_struct work = {
+    pid_struct work = {
         reset,
         error,
         settings[0],
@@ -19,7 +19,7 @@ void pid_input(hls_avalon_slave_memory_argument(NR_ARGS*sizeof(float)) float* se
         0.0,
         0.0,
         0.0
-    }
+    };
 
     dout.write(work);
 }

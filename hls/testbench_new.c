@@ -1,11 +1,11 @@
-#include <stdlib.h>
-#include <time.h>
 #include "HLS/stdio.h"
+#include <stdio.h>
 #include "pid_input.h"
 #include "proportional.h"
 #include "integral.h"
 #include "derivative.h"
 #include "pid_output.h"
+#include "config.h"
 
 #define test_samples 105
 
@@ -14,29 +14,32 @@ sensor_t sensor = 0;
 
 void process_plant_value(plant_t value) {
     double v = value.to_double();
-    if(value > 50) {
+
+    // make sure big changes take longer to reach.
+    if(value > 5 || value < -5) {
         v = v * 0.8;
         value = v;
     }
-    plant = plant + (int)value;
-}
 
-void create_sensor_value()
+    plant = plant + value;
+    sensor = plant;
+}
 
 int main(void) {
     bool reset = true;
     short sp;
-    pid_t sv = 0;
+    sensor_t sv = 0;
     pid_struct results_input[test_samples];
     pid_struct results_p[test_samples];
     pid_struct results_i[test_samples];
     pid_struct results_d[test_samples];
     plant_t results[test_samples];
+    plant_t results_plant[test_samples];
     float settings[NR_ARGS] = {
-        0.01f,                           // update frequency (seconds)
-        0.12f,                           // proportional gain
-        0.68f,                           // integral gain
-        1.1f                             // derivative gain
+        0.10f,                            // update frequency (seconds)
+        0.701f,                           // proportional gain
+        0.050f,                           // integral gain
+        0.041f                            // derivative gain
     };
 
     // Streams
@@ -57,24 +60,24 @@ int main(void) {
             printf("setpoint: 0\n-----------\n");
             sp = 0;
         } else if(i == 5) {             // setpoint 655
-            printf("setpoint: 655\n-------------\n");
-            sp = 655;
+            printf("setpoint: 69\n-------------\n");
+            sp = 69;
         } else if(i == 25) {            // setpoint 500
-            printf("setpoint: 500\n-------------\n");
-            sp = 500;
+            printf("setpoint: 50\n-------------\n");
+            sp = 50;
         } else if(i == 45) {            // setpoint 250
-            printf("setpoint: 250\n-------------\n");
-            sp = 250;
+            printf("setpoint: 25\n-------------\n");
+            sp = 25;
         } else if(i == 65) {            // setpoint 800
-            printf("setpoint: 800\n-------------\n");
-            sp = 800;
+            printf("setpoint: 95\n-------------\n");
+            sp = 95;
         } else if(i == 85){             // setpoint 0
             printf("setpoint: 0\n-----------\n");
             sp = 0;
         }
 
         // run DUT
-        pid_input(settings, sp, sv, reset);
+        pid_input(settings, sp, sv, reset, pid_input_out);
 
         // read output
         results_input[i] = pid_input_out.read();
@@ -115,11 +118,19 @@ int main(void) {
         // . . . . . . . . . . . . . . .
         // . . pid output  testbench . .
         // . . . . . . . . . . . . . . .
+        pid_output_in.write(results_d[i]);
         ihc_hls_enqueue(&results[i], &pid_output, pid_output_in);
         ihc_hls_component_run_all(pid_output);
 
         // TODO simulate sensor value(sv) and do some process value conversion between plant and sensor.
         // this should also be implemented in HW.... when some sensor and actuator is known....
+        process_plant_value(results[i]);
+        sv = sensor;
+        results_plant[i] = plant;
+
+        printf("plant = %d\nsensor = %d\n", plant.to_int(), (int)sensor);
+
+        if(reset) reset = false;
     }
 
     // . . . . . . . . . . . . . . . .
@@ -134,24 +145,24 @@ int main(void) {
             printf("\nsetpoint 0\n");
             break;
             case 5:
-            printf("\nsetpoint 655\n");
+            printf("\nsetpoint 69\n");
             break;
             case 25:
-            printf("\nsetpoint 500\n");
+            printf("\nsetpoint 50\n");
             break;
             case 45:
-            printf("\nsetpoint 250\n");
+            printf("\nsetpoint 25\n");
             break;
             case 65:
-            printf("\nsetpoint 800\n");
+            printf("\nsetpoint 95\n");
             break;
             case 85:
             printf("\nsetpoint 0\n");
             break;
             default:
-            if(i % 5 == 0) printf("\n")
+            if(i % 5 == 0) printf("\n");
         }
-        printf("\t%i", i, (int)results[i]);
+        printf("\t%i", (int)results_plant[i]);
     }
 
     return 0;
