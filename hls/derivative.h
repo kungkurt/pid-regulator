@@ -3,7 +3,8 @@
 
 #include "proportional.h"
 
-hls_always_run_component component
+//hls_always_run_component
+component
 void derivative(ihc::stream_in<d_struct>& din, ihc::stream_out<pid_t>& dout);
 
 #endif
