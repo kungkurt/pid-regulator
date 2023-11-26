@@ -17,11 +17,10 @@ void integral(ihc::stream_in<i_struct>& din, ihc::stream_out<pid_t>& dout) {
     if(!(reset_reg > CLAMP_HIGH_LIMIT || reset_reg < CLAMP_LOW_LIMIT)) {
         // calculate output but do not accumulate during integral windup.
         // for now the limits for clamp are defined during compile time.
-        // will add a thenth of the gain with for each clock period with a update frequency of 100ms
-        // with a frequency of 500ms it will add a half of gain each clock period
-        // and with a frequency of one second a whole gain will be added each clock period
-        // this can need to be adjusted with diffrent sensor and plant. 
-        // this is just an example.
+        // will add a thenth of the gain with for each invocation with a update frequency of 100ms
+        // with a frequency of 500ms it will add a half of gain each invocation
+        // and with a frequency of one second a whole gain will be added on each invocation
+        // this can be in need of adjustment with diffrent sensor and plant. 
         ret = (work.Gi * work.error) + reset_reg;
     } else {
         // integral windup disable integral.
