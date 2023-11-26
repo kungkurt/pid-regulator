@@ -1,7 +1,6 @@
 #include "integral.h"
 
-//hls_always_run_component
-component
+hls_always_run_component component
 void integral(ihc::stream_in<i_struct>& din, ihc::stream_out<pid_t>& dout) {
     static pid_t reset_reg = 0.0;
     i_struct work = din.read();

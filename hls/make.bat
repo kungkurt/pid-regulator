@@ -9,6 +9,7 @@
 ::   any argument that starts with "-" will be added as a compiler flag
 ::   no specific order is necessary except that the first argument that do not start with "-"
 ::   will be used as RUN_ARG
+::   arguments like "--simulator none" will need to be added to FLAGS since support for space in CLI arguments do not exist for now.
 ::
 ::   a table of available RUN_ARG is shown below
 ::      - simulation
@@ -28,7 +29,7 @@ GOTO init_compiler
 set "CC=i++"
 set "TARGET=10M50DAF484C7G"
 set "HOST=x86-64"
-set "FLAGS=--clock 50MHz --fpc --fp-relaxed" 
+set "FLAGS=--clock 50MHz --fpc --fp-relaxed --simulator none" 
 set "SOURCE_FILES=pid_input.c proportional.c integral.c derivative.c pid_output.c testbench.c"
 set "APPLICATION_NAME=pid-controller"
 set "RUN_ARG=unset"

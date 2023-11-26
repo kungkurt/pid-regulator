@@ -65,16 +65,16 @@ int main(void) {
         if(i == 0) {                    // setpoint 0
             printf("setpoint: 0\n-----------\n");
             sp = 0;
-        } else if(i == 5) {             // setpoint 655
+        } else if(i == 5) {             // setpoint 69
             printf("setpoint: 69\n-------------\n");
             sp = 69;
-        } else if(i == 25) {            // setpoint 500
+        } else if(i == 25) {            // setpoint 50
             printf("setpoint: 50\n-------------\n");
             sp = 50;
-        } else if(i == 45) {            // setpoint 250
+        } else if(i == 45) {            // setpoint 25
             printf("setpoint: 25\n-------------\n");
             sp = 25;
-        } else if(i == 65) {            // setpoint 800
+        } else if(i == 65) {            // setpoint 95
             printf("setpoint: 95\n-------------\n");
             sp = 95;
         } else if(i == 85){             // setpoint 0
@@ -203,11 +203,11 @@ int main(void) {
             default:
                 if(i % 5 == 0) printf("\n");
         }
-        printf("\t%.2f", results_plant[i].to_double());
+        printf("\t%.1f", results_plant[i].to_double());
         if(((i-5) % 20 == 0 && i < 100) || i == 5 ) {
             printf("(r)");                                  // registers are reset here (since setpoint was changed.)
         } else {
-            printf("   ");
+            printf("  ");
         }
     }
 
