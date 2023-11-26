@@ -2,7 +2,7 @@
  * pid_driver.h
  *
  *  Created on: 26 nov. 2023
- *      Author: mathias
+ *      Author: Robin Riis
  */
 
 #ifndef PID_DRIVER_H_
